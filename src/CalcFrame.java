@@ -12,6 +12,10 @@ public class CalcFrame extends JFrame {
 		setResizable(false);
 		setLocationRelativeTo(null); // centers frame in screen
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		add(new CalcPanel());
+		
+		setVisible(true);
 	}
 	
 }
