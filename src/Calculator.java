@@ -3,6 +3,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -26,7 +28,9 @@ public class Calculator {
 			 "1", "2", "3", "+",
 			 "±", "0", ".", "="};
 	public static final Color LIGHT_BLUEISH = new Color(145, 205, 220);
+	public static final Color DARKER_BLUEISH = new Color(75, 180, 205);
 	public static final Color DARKER_GRAY = new Color(240, 240, 240);
+	public static final Color DARKEST_GRAY = new Color(224, 224, 224);
 	public static final Color LIGHTER_GRAY = new Color(252, 252, 252);
 	public static final Color MIDDLE_GRAY = new Color(247, 247, 247);
 	public static final Font BUTTON_BOLD =
@@ -41,6 +45,7 @@ public class Calculator {
 		JFrame frame = new JFrame("Calculator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+		frame.setResizable(false);
 		frame.setLocationRelativeTo(null); // centers frame in screen
 		
 		JPanel mainPanel = new JPanel(new BorderLayout()); 
@@ -83,6 +88,27 @@ public class Calculator {
 				button.setBorder(
 						new LineBorder(MIDDLE_GRAY, 1, true));
 			}
+			
+			button.addMouseListener(new MouseAdapter() {
+				private Color prevBackground;
+				
+				@Override
+	            public void mouseEntered(MouseEvent me) {
+					prevBackground = button.getBackground();
+					if (button.getText().equals("=")) {
+						button.setBackground(DARKER_BLUEISH);
+					} else {
+						button.setBackground(DARKEST_GRAY);
+					}
+	            }
+				
+				@Override
+	            public void mouseExited(MouseEvent me) {
+					button.setBackground(prevBackground);
+	            }
+				
+			});
+			
 			buttons.add(button);
 		}
 		mainPanel.add(buttons, BorderLayout.CENTER);
