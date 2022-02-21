@@ -1,8 +1,12 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.KeyStroke;
 
 public class CalcButton extends JButton {
 
@@ -13,13 +17,42 @@ public class CalcButton extends JButton {
 	private static final Color GRAY_HOVER = new Color(224, 224, 224);
 	private static final Color GRAY_247 = new Color(247, 247, 247);
 	private static final Color GRAY_252 = new Color(252, 252, 252);
+	// *, +, @ are broke
+	// %, - are missing
+	// same outer indices as BUTTON_TEXT indices
+	private static final Integer[][] HOTKEYS =
+			{{}, {KeyEvent.VK_DELETE}, {KeyEvent.VK_ESCAPE},
+					{KeyEvent.VK_BACK_SPACE},
+			 
+			 {KeyEvent.VK_R}, {}, {KeyEvent.VK_AT}, {KeyEvent.VK_SLASH,
+				 	KeyEvent.VK_DIVIDE},
+			 
+			 {KeyEvent.VK_7, KeyEvent.VK_NUMPAD7}, 
+			 		{KeyEvent.VK_8, KeyEvent.VK_NUMPAD8}, 
+			 		{KeyEvent.VK_9, KeyEvent.VK_NUMPAD9},
+			 		{KeyEvent.VK_MULTIPLY, KeyEvent.VK_ASTERISK},
+			 
+			 {KeyEvent.VK_4, KeyEvent.VK_NUMPAD4},
+			 		{KeyEvent.VK_5, KeyEvent.VK_NUMPAD5}, 
+			 		{KeyEvent.VK_6, KeyEvent.VK_NUMPAD6},
+			 		{KeyEvent.VK_SUBTRACT},
+			 
+			 {KeyEvent.VK_1, KeyEvent.VK_NUMPAD1},
+			 		{KeyEvent.VK_2, KeyEvent.VK_NUMPAD2},
+			 		{KeyEvent.VK_3, KeyEvent.VK_NUMPAD3},
+			 		{KeyEvent.VK_ADD, KeyEvent.VK_PLUS},
+			 
+			 {KeyEvent.VK_F9}, {KeyEvent.VK_0, KeyEvent.VK_NUMPAD0},
+			 		{KeyEvent.VK_PERIOD , KeyEvent.VK_DECIMAL},
+			 		{KeyEvent.VK_ENTER, KeyEvent.VK_EQUALS}};
 	private static final String[] BUTTON_TEXT = 
-		{"%", "CE", "C", "◄",
-		 "1/x", "x²", "√x", "÷",
-		 "7", "8", "9", "×",
-		 "4", "5", "6", "-",
-		 "1", "2", "3", "+",
-		 "±", "0", ".", "="};
+			{"%", "CE", "C", "◄",
+			 "1/x", "x²", "√x", "÷",
+			 "7", "8", "9", "×",
+			 "4", "5", "6", "-",
+			 "1", "2", "3", "+",
+			 "±", "0", ".", "="};
+	
 	
 	private int index; 
 	
@@ -27,8 +60,9 @@ public class CalcButton extends JButton {
 		super(BUTTON_TEXT[index]);
 		
 		this.index = index;
-		
+
 		setFont();
+		setHotkey();
 		setBorder(BorderFactory.createEmptyBorder());		
 		setContentAreaFilled(false); // Necessary for hover and click actions
 		setFocusPainted(false); // Removes button selecting's text highlight
@@ -45,6 +79,21 @@ public class CalcButton extends JButton {
 			// The rest (bottom left 3x4)
 			super.setFont(CalcPanel.BOLD);
 		}
+	}
+	
+	private void setHotkey() {
+		for (Integer hotkey : HOTKEYS[index]) {
+			getInputMap(WHEN_IN_FOCUSED_WINDOW).put(
+					KeyStroke.getKeyStroke(hotkey, 0), "doClick");
+		}
+		// TODO Needs a new AbstractAction for each hotkey (like this)?
+		getActionMap().put("doClick", new AbstractAction() {
+			
+			public void actionPerformed(ActionEvent e) {
+			  doClick();
+			}
+			
+		});
 	}
 	
 	@Override
