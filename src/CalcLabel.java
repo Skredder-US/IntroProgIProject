@@ -6,10 +6,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 public class CalcLabel extends JLabel {
-	public static final String FILL = "1,000,000,000,000,000"; // Temp
 	
 	public CalcLabel() {
-		super(FILL, SwingConstants.RIGHT);
+		super("0", SwingConstants.RIGHT);
 
 		setPreferredSize(new Dimension(450, 90));
 		setBackground(CalcPanel.GRAY_240);

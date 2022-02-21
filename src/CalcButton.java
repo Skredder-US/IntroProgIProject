@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
@@ -56,13 +57,15 @@ public class CalcButton extends JButton {
 	
 	private int index; 
 	
-	public CalcButton(int index) {
+	public CalcButton(int index, CalcLabel calcLabel) {
 		super(BUTTON_TEXT[index]);
+		
 		
 		this.index = index;
 
 		setFont();
 		setHotkey();
+		setAction(calcLabel, BUTTON_TEXT[index]);
 		setBorder(BorderFactory.createEmptyBorder());		
 		setContentAreaFilled(false); // Necessary for hover and click actions
 		setFocusPainted(false); // Removes button selecting's text highlight
@@ -89,11 +92,23 @@ public class CalcButton extends JButton {
 		// TODO Needs a new AbstractAction for each hotkey (like this)?
 		getActionMap().put("doClick", new AbstractAction() {
 			
+			@Override
 			public void actionPerformed(ActionEvent e) {
 			  doClick();
 			}
 			
 		});
+	}
+	
+	private void setAction(CalcLabel calcLabel, String text) {
+		addActionListener(new ActionListener() {
+			
+			@Override
+	        public void actionPerformed(ActionEvent ae) {
+				calcLabel.setText(text);
+	        }
+	         
+        });
 	}
 	
 	@Override

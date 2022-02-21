@@ -15,8 +15,9 @@ public class CalcPanel extends JPanel {
 	public CalcPanel() {
 		super(new BorderLayout());
 		
-		add(new CalcLabel(), BorderLayout.NORTH);
-		add(new CalcButtons(), BorderLayout.CENTER);
+		CalcLabel calcLabel = new CalcLabel();
+		add(calcLabel, BorderLayout.NORTH);
+		add(new CalcButtons(calcLabel), BorderLayout.CENTER);
 	}
 	
 }
