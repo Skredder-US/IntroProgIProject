@@ -54,6 +54,11 @@ public class Calculator {
 		}
 	}
 	
+	public void clearEntry() {
+		text = "0";
+		setText(text);
+	}
+	
 	public void clear() {
 		text = "0";
 		setText(text);
