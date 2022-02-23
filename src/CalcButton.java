@@ -145,6 +145,8 @@ public class CalcButton extends JButton implements ActionListener {
 		String text = BUTTON_TEXT[index];
 		if (text.matches("[0-9]")) {
 			calc.number(text);
+		} else if (text.equals("±")) {
+			calc.negate();
 		}
 	}
 	 

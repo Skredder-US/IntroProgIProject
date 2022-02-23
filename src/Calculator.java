@@ -19,7 +19,8 @@ public class Calculator {
 			String textWithComma = "";
 			for (int i = text.length() - 1; i >= 0; i--) {
 				digitCount++;
-				if (digitCount == 4 || digitCount > 4 && digitCount % 3 == 1) {
+				if (text.charAt(i) != '-' && (digitCount == 4
+						|| digitCount > 4 && digitCount % 3 == 1)) {
 					textWithComma = text.charAt(i) + "," + textWithComma;
 				} else {
 					textWithComma = text.charAt(i) + textWithComma;
@@ -37,6 +38,17 @@ public class Calculator {
 				text = n;
 			} else {
 				text += n;
+			}
+			setText(text);
+		}
+	}
+	
+	public void negate() {
+		if (!text.equals("0")) {
+			if (text.charAt(0) == '-') {
+				text = text.substring(1, text.length());
+			} else {
+				text = "-" + text;
 			}
 			setText(text);
 		}
