@@ -54,6 +54,21 @@ public class Calculator {
 		}
 	}
 	
+	public void clear() {
+		text = "0";
+		setText(text);
+	}
+	
+	public void back() {
+		if (text.length() == 1
+				|| (text.charAt(0) == '-' && text.length() == 2)) {
+			text = "0";
+		} else {
+			text = text.substring(0, text.length() - 1);
+		}
+		setText(text);
+	}
+	
 	public static void main(String[] args) {
 		new Calculator();
 	}
