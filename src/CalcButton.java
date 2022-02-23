@@ -148,7 +148,7 @@ public class CalcButton extends JButton implements ActionListener {
 		} else if (text.equals("±")) {
 			calc.negate();
 		} else if (text.equals(".")) {
-			// TODO
+			calc.decimal();
 		} else if (text.equals("CE")) {
 			calc.clearEntry();
 		} else if (text.equals("C")) {

@@ -11,25 +11,30 @@ public class Calculator {
 	}
 	
 	public void setText(String text) {
-		String[] split = text.split(".");
-		
-		if (split.length == 0) {
+		int decimalIndex = text.indexOf(".");
+		if (decimalIndex == -1) {
 			// no decimal
-			int digitCount = 0;
-			String textWithComma = "";
-			for (int i = text.length() - 1; i >= 0; i--) {
-				digitCount++;
-				if (text.charAt(i) != '-' && (digitCount == 4
-						|| digitCount > 4 && digitCount % 3 == 1)) {
-					textWithComma = text.charAt(i) + "," + textWithComma;
-				} else {
-					textWithComma = text.charAt(i) + textWithComma;
-				}
-			}
-			calcFrame.setText(textWithComma);
+			calcFrame.setText(addComma(text));
 		} else {
 			// decimal
+			calcFrame.setText(addComma(text.substring(0, decimalIndex))
+					+ text.substring(decimalIndex, text.length()));
 		}
+	}
+	
+	private static String addComma(String n) {
+		int digitCount = 0;
+		String withComma = "";
+		for (int i = n.length() - 1; i >= 0; i--) {
+			digitCount++;
+			if (n.charAt(i) != '-' && (digitCount == 4
+					|| digitCount > 4 && digitCount % 3 == 1)) {
+				withComma = n.charAt(i) + "," + withComma;
+			} else {
+				withComma = n.charAt(i) + withComma;
+			}
+		}
+		return withComma;
 	}
 
 	public void number(String n) {
@@ -50,6 +55,13 @@ public class Calculator {
 			} else {
 				text = "-" + text;
 			}
+			setText(text);
+		}
+	}
+	
+	public void decimal() {
+		if (!text.contains(".")) {
+			text += ".";
 			setText(text);
 		}
 	}
