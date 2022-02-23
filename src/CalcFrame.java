@@ -5,7 +5,9 @@ public class CalcFrame extends JFrame {
 	public static final int WIDTH  = 516;
 	public static final String TITLE = "Calculator";
 	
-	public CalcFrame() {
+	private CalcPanel calcPanel;
+	
+	public CalcFrame(Calculator calc) {
 		super(TITLE);
 
 		setSize(WIDTH, HEIGHT);
@@ -13,9 +15,18 @@ public class CalcFrame extends JFrame {
 		setLocationRelativeTo(null); // centers frame in screen
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		add(new CalcPanel());
+		calcPanel = new CalcPanel(calc);
+		add(calcPanel);
 		
 		setVisible(true);
+	}
+	
+	public void setText(String entry) {
+		calcPanel.setText(entry);
+	}
+	
+	public void displayDivZero() {
+		calcPanel.displayDivZero();
 	}
 	
 }

@@ -7,8 +7,8 @@ import javax.swing.border.EmptyBorder;
 
 public class CalcLabel extends JLabel {
 	
-	public CalcLabel() {
-		super("0", SwingConstants.RIGHT);
+	public CalcLabel(Calculator calc) {
+		super("", SwingConstants.RIGHT);
 
 		setPreferredSize(new Dimension(450, 90));
 		setBackground(CalcPanel.GRAY_240);

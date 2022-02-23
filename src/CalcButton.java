@@ -9,7 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.KeyStroke;
 
-public class CalcButton extends JButton {
+public class CalcButton extends JButton implements ActionListener {
 
 	private static final Color BLUE_PRESSED = new Color(0, 153, 188);
 	private static final Color BLUE_HOVER = new Color(75, 180, 205);
@@ -56,16 +56,17 @@ public class CalcButton extends JButton {
 	
 	
 	private int index; 
+	private Calculator calc;
 	
-	public CalcButton(int index, CalcLabel calcLabel) {
+	public CalcButton(Calculator calc, int index) {
 		super(BUTTON_TEXT[index]);
 		
-		
+		this.calc = calc;
 		this.index = index;
 
 		setFont();
 		setHotkey();
-		setAction(calcLabel, BUTTON_TEXT[index]);
+		addActionListener(this);
 		setBorder(BorderFactory.createEmptyBorder());		
 		setContentAreaFilled(false); // Necessary for hover and click actions
 		setFocusPainted(false); // Removes button selecting's text highlight
@@ -98,17 +99,6 @@ public class CalcButton extends JButton {
 			}
 			
 		});
-	}
-	
-	private void setAction(CalcLabel calcLabel, String text) {
-		addActionListener(new ActionListener() {
-			
-			@Override
-	        public void actionPerformed(ActionEvent ae) {
-				calcLabel.setText(text);
-	        }
-	         
-        });
 	}
 	
 	@Override
@@ -149,5 +139,58 @@ public class CalcButton extends JButton {
         // The rest
         super.paintComponent(g);
     }
+
+	@Override
+	public void actionPerformed(ActionEvent ae) {
+		String text = BUTTON_TEXT[index];
+		if (text.matches("[0-9]")) {
+			calc.number(text);
+		}
+	}
 	 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
