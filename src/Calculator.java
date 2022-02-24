@@ -3,11 +3,24 @@ public class Calculator {
 	public static final String DIV_ZERO = "Cannot divide by zero";
 	public static final String OVERFLOW = "Overflow";
 	
+	enum Operation {
+		ADD,
+		SUBTRACT,
+		MULTIPLY,
+		DIVIDE
+	}
+	
 	private String entry;
+	private String nextEntry;
+	private boolean isNextEntry;
+	private Operation op;
 	private CalcFrame calcFrame;
 	
 	public Calculator() {
 		entry = "0";
+		nextEntry = "0";
+		isNextEntry = false;
+		op = null;
 		
 		calcFrame = new CalcFrame(this);
 		calcFrame.setText(entry);
@@ -45,7 +58,14 @@ public class Calculator {
 	} 
 
 	public void number(String n) {
-		if (entry.length() < 16) {
+		if (isNextEntry) {
+			if (nextEntry.equals("0")) {
+				nextEntry = n;
+			} else {
+				nextEntry += n;
+			}
+			setText(nextEntry);
+		} else if (entry.length() < 16) {
 			if (entry.equals("0")) {
 				entry = n;
 			} else {
@@ -56,30 +76,54 @@ public class Calculator {
 	}
 	
 	public void negate() {
-		if (!entry.equals("0")) {
-			if (entry.charAt(0) == '-') {
-				entry = entry.substring(1, entry.length());
-			} else {
-				entry = "-" + entry;
+		if (isNextEntry) {
+			if (!nextEntry.equals("0")) {
+				if (nextEntry.charAt(0) == '-') {
+					nextEntry = nextEntry.substring(1, entry.length());
+				} else {
+					nextEntry = "-" + nextEntry;
+				}
+				setText(nextEntry);
 			}
-			setText(entry);
+		} else {
+			if (!entry.equals("0")) {
+				if (entry.charAt(0) == '-') {
+					entry = entry.substring(1, entry.length());
+				} else {
+					entry = "-" + entry;
+				}
+				setText(entry);
+			}
 		}
 	}
 	
 	public void decimal() {
-		if (!entry.contains(".")) {
-			entry += ".";
-			setText(entry);
+		if (isNextEntry) {
+			if (!nextEntry.contains(".")) {
+				nextEntry += ".";
+				setText(nextEntry);
+			}
+		} else {
+			if (!entry.contains(".")) {
+				entry += ".";
+				setText(entry);
+			}
 		}
 	}
 	
 	public void clearEntry() {
-		entry = "0";
-		setText(entry);
+		if (isNextEntry) {
+			nextEntry = "0";
+			setText(nextEntry);
+		} else {
+			entry = "0";
+			setText(entry);
+		}
 	}
 	
 	public void clear() {
 		entry = "0";
+		nextEntry = "0";
 		setText(entry);
 	}
 	
@@ -91,6 +135,20 @@ public class Calculator {
 			entry = entry.substring(0, entry.length() - 1);
 		}
 		setText(entry);
+	}
+	
+	public void add() {
+		isNextEntry = true;
+		op = Operation.ADD;
+	}
+	
+	public void equals() {
+		isNextEntry = false;
+		if (op == Operation.ADD) {
+			double value = Double.valueOf(nextEntry) + Double.valueOf(entry);
+			setEntry(value);
+			setText(entry);
+		}
 	}
 	
 	public void oneOver() {

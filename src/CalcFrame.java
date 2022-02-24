@@ -1,3 +1,5 @@
+import java.awt.Toolkit;
+
 import javax.swing.JFrame;
 
 public class CalcFrame extends JFrame {
@@ -14,7 +16,8 @@ public class CalcFrame extends JFrame {
 		setResizable(false);
 		setLocationRelativeTo(null); // centers frame in screen
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// TODO set icon w/ frame.setIconImage(  );
+		setIconImage(
+				Toolkit.getDefaultToolkit().getImage("src/Calculator-Icon.png"));
 		
 		calcPanel = new CalcPanel(calc);
 		add(calcPanel);
