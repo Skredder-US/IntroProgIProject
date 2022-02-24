@@ -97,12 +97,7 @@ public class Calculator {
 		if (!entry.equals("0")) {
 			double value = Double.valueOf(entry);
 			value = 1 / value;
-			int intValue = (int) value;
-			if (intValue == value) {
-				entry = "" + intValue;
-			} else {
-				entry = "" + value;
-			}
+			setEntry(value);
 			setText(entry);
 		} else {
 			calcFrame.setText(DIV_ZERO);
@@ -113,17 +108,27 @@ public class Calculator {
 		double value = Double.valueOf(entry);
 		value *= value;
 		if (value != 0) {
-			int intValue = (int) value;
-			if (intValue == value) {
-				entry = "" + intValue;
-			} else {
-				entry = "" + value;
-			}
+			setEntry(value);
 			setText(entry);
 		} else {
 			calcFrame.setText(OVERFLOW);
 		}
-
+	}
+	
+	public void sqrt() {
+		double value = Double.valueOf(entry);
+		value = Math.sqrt(value);
+		setEntry(value);
+		setText(entry);
+	}
+	
+	private void setEntry(double value) {
+		int intValue = (int) value;
+		if (intValue == value) {
+			entry = "" + intValue;
+		} else {
+			entry = "" + value;
+		}
 	}
 	
 	public static void main(String[] args) {

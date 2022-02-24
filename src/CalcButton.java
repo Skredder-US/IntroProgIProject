@@ -159,6 +159,8 @@ public class CalcButton extends JButton implements ActionListener {
 			calc.oneOver();
 		} else if (text.equals("x²")) {
 			calc.squared();
+		} else if (text.equals("√x")) {
+			calc.sqrt();
 		}
 	}
 	 
