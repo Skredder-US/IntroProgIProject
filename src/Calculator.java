@@ -1,13 +1,13 @@
 public class Calculator {
 
+	private String entry;
 	private CalcFrame calcFrame;
-	private String text;
 	
 	public Calculator() {
-		text = "0";
+		entry = "0";
 		
 		calcFrame = new CalcFrame(this);
-		calcFrame.setText(text);
+		calcFrame.setText(entry);
 	}
 	
 	public void setText(String text) {
@@ -35,59 +35,74 @@ public class Calculator {
 			}
 		}
 		return withComma;
-	}
+	} 
 
 	public void number(String n) {
-		if (text.length() < 16) {
-			if (text.equals("0")) {
-				text = n;
+		if (entry.length() < 16) {
+			if (entry.equals("0")) {
+				entry = n;
 			} else {
-				text += n;
+				entry += n;
 			}
-			setText(text);
+			setText(entry);
 		}
 	}
 	
 	public void negate() {
-		if (!text.equals("0")) {
-			if (text.charAt(0) == '-') {
-				text = text.substring(1, text.length());
+		if (!entry.equals("0")) {
+			if (entry.charAt(0) == '-') {
+				entry = entry.substring(1, entry.length());
 			} else {
-				text = "-" + text;
+				entry = "-" + entry;
 			}
-			setText(text);
+			setText(entry);
 		}
 	}
 	
 	public void decimal() {
-		if (!text.contains(".")) {
-			text += ".";
-			setText(text);
+		if (!entry.contains(".")) {
+			entry += ".";
+			setText(entry);
 		}
 	}
 	
 	public void clearEntry() {
-		text = "0";
-		setText(text);
+		entry = "0";
+		setText(entry);
 	}
 	
 	public void clear() {
-		text = "0";
-		setText(text);
+		entry = "0";
+		setText(entry);
 	}
 	
 	public void back() {
-		if (text.length() == 1
-				|| (text.charAt(0) == '-' && text.length() == 2)) {
-			text = "0";
+		if (entry.length() == 1
+				|| (entry.charAt(0) == '-' && entry.length() == 2)) {
+			entry = "0";
 		} else {
-			text = text.substring(0, text.length() - 1);
+			entry = entry.substring(0, entry.length() - 1);
 		}
-		setText(text);
+		setText(entry);
+	}
+	
+	public void oneOver() {
+		if (!entry.equals("0")) {
+			double value = Double.valueOf(entry);
+			value = 1 / value;
+			int intValue = (int) value;
+			if (intValue == value) {
+				entry = "" + intValue;
+			} else {
+				entry = "" + value;
+			}
+			setText(entry);
+		} else {
+			calcFrame.divZero();
+		}
 	}
 	
 	public static void main(String[] args) {
 		new Calculator();
 	}
-
 }

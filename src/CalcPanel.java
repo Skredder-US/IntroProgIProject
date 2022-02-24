@@ -28,7 +28,7 @@ public class CalcPanel extends JPanel {
 		calcLabel.setText(text);
 	}
 	
-	public void displayDivZero() {
+	public void divZero() {
 		calcLabel.setText(DIV_ZERO);
 	}
 	

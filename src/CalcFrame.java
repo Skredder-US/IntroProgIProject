@@ -14,6 +14,7 @@ public class CalcFrame extends JFrame {
 		setResizable(false);
 		setLocationRelativeTo(null); // centers frame in screen
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// TODO set icon w/ frame.setIconImage(  );
 		
 		calcPanel = new CalcPanel(calc);
 		add(calcPanel);
@@ -25,8 +26,8 @@ public class CalcFrame extends JFrame {
 		calcPanel.setText(entry);
 	}
 	
-	public void displayDivZero() {
-		calcPanel.displayDivZero();
+	public void divZero() {
+		calcPanel.divZero();
 	}
 	
 }
