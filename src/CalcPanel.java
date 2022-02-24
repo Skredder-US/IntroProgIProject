@@ -6,7 +6,6 @@ import javax.swing.JPanel;
 
 public class CalcPanel extends JPanel {
 	public static final Color GRAY_240 = new Color(240, 240, 240);
-	public static final String DIV_ZERO = "Cannot divide by zero";
 	public static final String FONT_BOLD = "Segoe UI Semibold";
 	public static final String FONT_PLAIN = "Segoe UI";
 	public static final Font BOLD = new Font(FONT_BOLD, Font.PLAIN, 18);
@@ -26,10 +25,6 @@ public class CalcPanel extends JPanel {
 	
 	public void setText(String text) {
 		calcLabel.setText(text);
-	}
-	
-	public void divZero() {
-		calcLabel.setText(DIV_ZERO);
 	}
 	
 }

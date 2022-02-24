@@ -1,5 +1,8 @@
 public class Calculator {
-
+	
+	public static final String DIV_ZERO = "Cannot divide by zero";
+	public static final String OVERFLOW = "Overflow";
+	
 	private String entry;
 	private CalcFrame calcFrame;
 	
@@ -11,14 +14,18 @@ public class Calculator {
 	}
 	
 	public void setText(String text) {
-		int decimalIndex = text.indexOf(".");
-		if (decimalIndex == -1) {
-			// no decimal
-			calcFrame.setText(addComma(text));
+		if (!text.equals("Infinity")) {
+			int decimalIndex = text.indexOf(".");
+			if (decimalIndex == -1) {
+				// no decimal
+				calcFrame.setText(addComma(text));
+			} else {
+				// decimal
+				calcFrame.setText(addComma(text.substring(0, decimalIndex))
+						+ text.substring(decimalIndex, text.length()));
+			}
 		} else {
-			// decimal
-			calcFrame.setText(addComma(text.substring(0, decimalIndex))
-					+ text.substring(decimalIndex, text.length()));
+			calcFrame.setText(OVERFLOW);
 		}
 	}
 	
@@ -98,8 +105,25 @@ public class Calculator {
 			}
 			setText(entry);
 		} else {
-			calcFrame.divZero();
+			calcFrame.setText(DIV_ZERO);
 		}
+	}
+	
+	public void squared() {
+		double value = Double.valueOf(entry);
+		value *= value;
+		if (value != 0) {
+			int intValue = (int) value;
+			if (intValue == value) {
+				entry = "" + intValue;
+			} else {
+				entry = "" + value;
+			}
+			setText(entry);
+		} else {
+			calcFrame.setText(OVERFLOW);
+		}
+
 	}
 	
 	public static void main(String[] args) {

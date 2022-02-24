@@ -26,8 +26,4 @@ public class CalcFrame extends JFrame {
 		calcPanel.setText(entry);
 	}
 	
-	public void divZero() {
-		calcPanel.divZero();
-	}
-	
 }
