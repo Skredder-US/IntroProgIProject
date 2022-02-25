@@ -7,16 +7,28 @@ public class Calculator {
 	
 	enum Operation {
 		  ADD {
-			  public double apply(double a, double b) { return a + b; }
+				@Override
+				public double apply(double a, double b) {
+					return a + b;
+				}
 		  }, 
 		  SUBTRACT {
-			  public double apply(double a, double b) { return a - b; }
+				@Override
+				public double apply(double a, double b) {
+					return a - b;
+				}
 		  }, 
 		  MULTIPLY {
-			  public double apply(double a, double b) { return a * b; }
+				@Override
+				public double apply(double a, double b) {
+					return a * b;
+				}
 		  }, 
 		  DIVIDE {
-			  public double apply(double a, double b) { return a / b; }
+				@Override
+				public double apply(double a, double b) {
+					return a / b;
+				}
 		  };
 
 		  public abstract double apply(double a, double b);
@@ -31,15 +43,18 @@ public class Calculator {
 	private boolean prevIsNumber;
 	
 	public Calculator() {
+		calcFrame = new CalcFrame(this);
 		entry = "0";
 		secondEntry = "0";
+		repeatEntry = "0";
 		op = null;
+		repeatOp = null;
+		prevIsNumber = false;
 		
-		calcFrame = new CalcFrame(this);
 		calcFrame.setText(entry);
 	}
 	
-	public void setText(String text) {
+	private void setText(String text) {
 		if (!text.equals("Infinity")) {
 			int decimalIndex = text.indexOf(".");
 			if (decimalIndex == -1) {
@@ -61,7 +76,7 @@ public class Calculator {
 		for (int i = n.length() - 1; i >= 0; i--) {
 			digitCount++;
 			if (n.charAt(i) != '-' && (digitCount == 4
-					|| digitCount > 4 && digitCount % 3 == 1)) {
+					|| (digitCount > 4 && digitCount % 3 == 1))) {
 				withComma = n.charAt(i) + "," + withComma;
 			} else {
 				withComma = n.charAt(i) + withComma;
@@ -70,43 +85,27 @@ public class Calculator {
 		return withComma;
 	} 
 	
-	private void setEntry(double value) {
-		int intValue = (int) value;
-		if (intValue == value) {
-			entry = "" + intValue;
-		} else {
-			entry = "" + value;
-		}
-		setText(entry);
-		secondEntry = "0";
-	}
-	
-	private void setSecondEntry(double value) {
-		int intValue = (int) value;
-		if (intValue == value) {
-			secondEntry = "" + intValue;
-		} else {
-			secondEntry = "" + value;
-		}
-		setText(secondEntry);
-	}
-	
 	public void number(String n) {
 		prevIsNumber = true;
-		if (op != null) {
-			if (secondEntry.equals("0")) {
-				secondEntry = n;
-			} else {
-				secondEntry += n;
+		
+		if (op == null) {
+			if (entry.length() < 16) {
+				if (entry.equals("0")) {
+					entry = n;
+				} else {
+					entry += n;
+				}
+				setText(entry);
 			}
-			setText(secondEntry);
-		} else if (entry.length() < 16) {
-			if (entry.equals("0")) {
-				entry = n;
-			} else {
-				entry += n;
+		} else  {
+			if (secondEntry.length() < 16) {
+				if (secondEntry.equals("0")) {
+					secondEntry = n;
+				} else {
+					secondEntry += n;
+				}
+				setText(secondEntry);
 			}
-			setText(entry);
 		}
 	}
 	
@@ -137,11 +136,6 @@ public class Calculator {
 	}
 	
 	public void equals() {
-		eval(op);
-		repeatOp = null;
-	}
-	
-	private void eval(Operation op) {
 		if (repeatOp == null || !prevIsNumber) {
 			setEntry(op.apply(
 					Double.valueOf(entry), Double.valueOf(repeatEntry)));
@@ -150,6 +144,28 @@ public class Calculator {
 			setEntry(op.apply(
 					Double.valueOf(entry), Double.valueOf(secondEntry)));
 		}
+		repeatOp = null;
+	}
+	
+	private void setEntry(double value) {
+		int intValue = (int) value;
+		if (intValue == value) {
+			entry = "" + intValue;
+		} else {
+			entry = "" + value;
+		}
+		setText(entry);
+		secondEntry = "0";
+	}
+	
+	private void setSecondEntry(double value) {
+		int intValue = (int) value;
+		if (intValue == value) {
+			secondEntry = "" + intValue;
+		} else {
+			secondEntry = "" + value;
+		}
+		setText(secondEntry);
 	}
 	
 	public void clear() {
@@ -170,13 +186,26 @@ public class Calculator {
 	}
 	
 	public void back() {
-		if (entry.length() == 1
-				|| (entry.charAt(0) == '-' && entry.length() == 2)) {
-			entry = "0";
+		if (op == null) {
+			if (entry.length() == 1
+					|| (entry.charAt(0) == '-' && entry.length() == 2)) {
+				entry = "0";
+			} else {
+				entry = entry.substring(0, entry.length() - 1);
+			}
+			setText(entry);
 		} else {
-			entry = entry.substring(0, entry.length() - 1);
+			if (secondEntry.length() == 1 
+					|| (secondEntry.charAt(0) == '-'
+					&& secondEntry.length() == 2)) {
+				secondEntry = "0";
+			} else {
+				secondEntry = 
+						secondEntry.substring(0, secondEntry.length() - 1);
+			}
+			setText(secondEntry);
+			
 		}
-		setText(entry);
 	}
 	
 	public void decimal() {
