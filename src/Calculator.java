@@ -1,3 +1,6 @@
+import java.math.BigDecimal;
+import java.math.MathContext;
+
 import javax.swing.SwingUtilities;
 
 public class Calculator {
@@ -5,34 +8,37 @@ public class Calculator {
 	public static final String DIV_ZERO = "Cannot divide by zero";
 	public static final String OVERFLOW = "Overflow";
 	
+	private static final MathContext PRECISION = new MathContext(16);
+	private static final BigDecimal ONE = new BigDecimal("1");
+	
 	enum Operation {
-		  ADD {
-				@Override
-				public double apply(double a, double b) {
-					return a + b;
-				}
-		  }, 
-		  SUBTRACT {
-				@Override
-				public double apply(double a, double b) {
-					return a - b;
-				}
-		  }, 
-		  MULTIPLY {
-				@Override
-				public double apply(double a, double b) {
-					return a * b;
-				}
-		  }, 
-		  DIVIDE {
-				@Override
-				public double apply(double a, double b) {
-					return a / b;
-				}
-		  };
+		ADD {
+			@Override
+			public BigDecimal apply(BigDecimal a, BigDecimal b) {
+				return a.add(b, PRECISION);
+			}
+		}, 
+		SUBTRACT {
+			@Override
+			public BigDecimal apply(BigDecimal a, BigDecimal b) {
+				return a.subtract(b, PRECISION);
+			}
+		}, 
+		MULTIPLY {
+			@Override
+			public BigDecimal apply(BigDecimal a, BigDecimal b) {
+				return a.multiply(b, PRECISION);
+			}
+		}, 
+		DIVIDE {
+			@Override
+			public BigDecimal apply(BigDecimal a, BigDecimal b) {
+				return a.divide(b, PRECISION);
+			}
+		};
 
-		  public abstract double apply(double a, double b);
-		}
+		public abstract BigDecimal apply(BigDecimal a, BigDecimal b);
+	}
 
 	private CalcFrame calcFrame;
 	private String entry;
@@ -138,40 +144,34 @@ public class Calculator {
 	public void equals() {
 		if (repeatOp == null || !prevIsNumber) {
 			setEntry(op.apply(
-					Double.valueOf(entry), Double.valueOf(repeatEntry)));
+					new BigDecimal(entry), new BigDecimal(repeatEntry)));
 		} else {
 			repeatEntry = secondEntry;
 			setEntry(op.apply(
-					Double.valueOf(entry), Double.valueOf(secondEntry)));
+					new BigDecimal(entry), new BigDecimal(secondEntry)));
 		}
 		repeatOp = null;
 	}
 	
-	private void setEntry(double value) {
-		int intValue = (int) value;
-		if (intValue == value) {
-			entry = "" + intValue;
-		} else {
-			entry = "" + value;
-		}
+	private void setEntry(BigDecimal num) {
+		entry = "" + num;
 		setText(entry);
 		secondEntry = "0";
 	}
 	
-	private void setSecondEntry(double value) {
-		int intValue = (int) value;
-		if (intValue == value) {
-			secondEntry = "" + intValue;
-		} else {
-			secondEntry = "" + value;
-		}
+	private void setSecondEntry(BigDecimal num) {
+		secondEntry = "" + num;
 		setText(secondEntry);
 	}
 	
 	public void clear() {
 		entry = "0";
 		secondEntry = "0";
+		repeatEntry = "0";
 		op = null;
+		repeatOp = null;
+		prevIsNumber = false;
+		
 		setText(entry);
 	}
 	
@@ -247,13 +247,14 @@ public class Calculator {
 	public void oneOver() {
 		if (secondEntry == "0") {
 			if (!entry.equals("0")) {
-				setEntry(1 / Double.valueOf(entry));
+				setEntry((ONE.divide(new BigDecimal(entry))));
 			} else {
 				calcFrame.setText(DIV_ZERO);
 			}
 		} else {
 			if (!secondEntry.equals("0")) {
-				setEntry(1 / Double.valueOf(secondEntry));
+				setEntry((new BigDecimal("1").divide(
+						new BigDecimal(secondEntry))));
 			} else {
 				calcFrame.setText(DIV_ZERO);
 			}
@@ -263,17 +264,17 @@ public class Calculator {
 	
 	public void squared() {
 		if (secondEntry == "0") {
-			double value = Double.valueOf(entry);
-			value *= value;
-			if (value != 0) {
+			BigDecimal value = new BigDecimal(entry);
+			value.multiply(value);
+			if (!value.equals(new BigDecimal(0))) {
 				setEntry(value);
 			} else {
 				calcFrame.setText(OVERFLOW);
 			}
 		} else {
-			double value = Double.valueOf(secondEntry);
-			value *= value;
-			if (value != 0) {
+			BigDecimal value = new BigDecimal(secondEntry);
+			value.multiply(value);
+			if (!value.equals(new BigDecimal(0))) {
 				setSecondEntry(value);
 			} else {
 				calcFrame.setText(OVERFLOW);
@@ -283,16 +284,17 @@ public class Calculator {
 	
 	public void sqrt() {
 		if (secondEntry == "0") {
-			setEntry(Math.sqrt(Double.valueOf(entry)));
+			setEntry((new BigDecimal(entry)).sqrt(PRECISION));
 		} else {
-			setSecondEntry(Math.sqrt(Double.valueOf(secondEntry)));
+			setSecondEntry( 
+					(new BigDecimal(secondEntry)).sqrt(PRECISION));
 		}
 	}
 
 	public void percent() {
 		if (secondEntry != "0") {
-			setSecondEntry(
-					Double.valueOf(entry) * Double.valueOf(secondEntry) / 100);
+			setSecondEntry((new BigDecimal(entry).multiply(
+					new BigDecimal(secondEntry))).divide(new BigDecimal(100)));
 		} else {
 			entry = "0";
 		}
@@ -307,4 +309,5 @@ public class Calculator {
             }
         });
     }
+	
 }
