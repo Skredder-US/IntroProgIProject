@@ -18,7 +18,7 @@ public class Calculator {
 	private String secondEntry;
 	private String repeatEntry;
 	private Operation op;
-	private boolean isRepeatOp;
+	private Operation repeatOp;
 	private boolean prevIsNumber;
 	
 	public Calculator() {
@@ -144,22 +144,25 @@ public class Calculator {
 	}
 	
 	public void add() {
+		if (repeatOp != Operation.NONE) {
+			equals();
+		}
 		op = Operation.ADD;
-		isRepeatOp = false;
-		prevIsNumber = false;
+		repeatOp = Operation.ADD;
 		repeatEntry = entry;
+		prevIsNumber = false;
 	}
 	
 	public void equals() {
 		if (op == Operation.ADD) {
-			if (isRepeatOp || !prevIsNumber) {
+			if (repeatOp == Operation.NONE || !prevIsNumber) {
 				setEntry(Double.valueOf(entry) + Double.valueOf(repeatEntry));
 			} else {
 				repeatEntry = secondEntry;
 				setEntry(Double.valueOf(entry) + Double.valueOf(secondEntry));
-				isRepeatOp = true;
 			}
 		}
+		repeatOp = Operation.NONE;
 	}
 	
 	public void oneOver() {
