@@ -111,6 +111,16 @@ public class Calculator {
 		prevIsNumber = false;
 	}
 	
+	public void multiply() {
+		if (repeatOp != Operation.NONE) {
+			equals();
+		}
+		op = Operation.MULTIPLY;
+		repeatOp = Operation.MULTIPLY;
+		repeatEntry = entry;
+		prevIsNumber = false;
+	}
+	
 	public void equals() {
 		if (op == Operation.ADD) {
 			if (repeatOp == Operation.NONE || !prevIsNumber) {
@@ -118,6 +128,13 @@ public class Calculator {
 			} else {
 				repeatEntry = secondEntry;
 				setEntry(Double.valueOf(entry) + Double.valueOf(secondEntry));
+			}
+		} else if (op == Operation.MULTIPLY) {
+			if (repeatOp == Operation.NONE || !prevIsNumber) {
+				setEntry(Double.valueOf(entry) * Double.valueOf(repeatEntry));
+			} else {
+				repeatEntry = secondEntry;
+				setEntry(Double.valueOf(entry) * Double.valueOf(secondEntry));
 			}
 		}
 		repeatOp = Operation.NONE;
