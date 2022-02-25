@@ -9,7 +9,8 @@ public class Calculator {
 	public static final String OVERFLOW = "Overflow";
 	
 	private static final MathContext PRECISION = new MathContext(16);
-	private static final BigDecimal ONE = new BigDecimal("1");
+	private static final BigDecimal ONE = new BigDecimal(1);
+	private static final BigDecimal ZERO = new BigDecimal(0);
 	
 	enum Operation {
 		ADD {
@@ -247,14 +248,13 @@ public class Calculator {
 	public void oneOver() {
 		if (secondEntry == "0") {
 			if (!entry.equals("0")) {
-				setEntry((ONE.divide(new BigDecimal(entry))));
+				setEntry(ONE.divide(new BigDecimal(entry), PRECISION));
 			} else {
 				calcFrame.setText(DIV_ZERO);
 			}
 		} else {
 			if (!secondEntry.equals("0")) {
-				setEntry((new BigDecimal("1").divide(
-						new BigDecimal(secondEntry))));
+				setEntry(ONE.divide(new BigDecimal(secondEntry), PRECISION));
 			} else {
 				calcFrame.setText(DIV_ZERO);
 			}
@@ -265,16 +265,16 @@ public class Calculator {
 	public void squared() {
 		if (secondEntry == "0") {
 			BigDecimal value = new BigDecimal(entry);
-			value.multiply(value);
-			if (!value.equals(new BigDecimal(0))) {
+			value = value.multiply(value, PRECISION);
+			if (!value.equals(ZERO)) {
 				setEntry(value);
 			} else {
 				calcFrame.setText(OVERFLOW);
 			}
 		} else {
 			BigDecimal value = new BigDecimal(secondEntry);
-			value.multiply(value);
-			if (!value.equals(new BigDecimal(0))) {
+			value = value.multiply(value, PRECISION);
+			if (!value.equals(ZERO)) {
 				setSecondEntry(value);
 			} else {
 				calcFrame.setText(OVERFLOW);
