@@ -60,7 +60,28 @@ public class Calculator {
 		}
 		return withComma;
 	} 
-
+	
+	private void setEntry(double value) {
+		int intValue = (int) value;
+		if (intValue == value) {
+			entry = "" + intValue;
+		} else {
+			entry = "" + value;
+		}
+		setText(entry);
+		secondEntry = "0";
+	}
+	
+	private void setSecondEntry(double value) {
+		int intValue = (int) value;
+		if (intValue == value) {
+			secondEntry = "" + intValue;
+		} else {
+			secondEntry = "" + value;
+		}
+		setText(secondEntry);
+	}
+	
 	public void number(String n) {
 		prevIsNumber = true;
 		if (op != Operation.NONE) {
@@ -77,6 +98,69 @@ public class Calculator {
 				entry += n;
 			}
 			setText(entry);
+		}
+	}
+	
+	public void add() {
+		if (repeatOp != Operation.NONE) {
+			equals();
+		}
+		op = Operation.ADD;
+		repeatOp = Operation.ADD;
+		repeatEntry = entry;
+		prevIsNumber = false;
+	}
+	
+	public void equals() {
+		if (op == Operation.ADD) {
+			if (repeatOp == Operation.NONE || !prevIsNumber) {
+				setEntry(Double.valueOf(entry) + Double.valueOf(repeatEntry));
+			} else {
+				repeatEntry = secondEntry;
+				setEntry(Double.valueOf(entry) + Double.valueOf(secondEntry));
+			}
+		}
+		repeatOp = Operation.NONE;
+	}
+	
+	public void clear() {
+		entry = "0";
+		secondEntry = "0";
+		op = Operation.NONE;
+		setText(entry);
+	}
+	
+	public void clearEntry() {
+		if (op != Operation.NONE) {
+			secondEntry = "0";
+			setText(secondEntry);
+		} else {
+			entry = "0";
+			setText(entry);
+		}
+	}
+	
+	public void back() {
+		if (entry.length() == 1
+				|| (entry.charAt(0) == '-' && entry.length() == 2)) {
+			entry = "0";
+		} else {
+			entry = entry.substring(0, entry.length() - 1);
+		}
+		setText(entry);
+	}
+	
+	public void decimal() {
+		if (op != Operation.NONE) {
+			if (!secondEntry.contains(".")) {
+				secondEntry += ".";
+				setText(secondEntry);
+			}
+		} else {
+			if (!entry.contains(".")) {
+				entry += ".";
+				setText(entry);
+			}
 		}
 	}
 	
@@ -102,83 +186,16 @@ public class Calculator {
 		}
 	}
 	
-	public void decimal() {
-		if (op != Operation.NONE) {
-			if (!secondEntry.contains(".")) {
-				secondEntry += ".";
-				setText(secondEntry);
-			}
-		} else {
-			if (!entry.contains(".")) {
-				entry += ".";
-				setText(entry);
-			}
-		}
-	}
-	
-	public void clearEntry() {
-		if (op != Operation.NONE) {
-			secondEntry = "0";
-			setText(secondEntry);
-		} else {
-			entry = "0";
-			setText(entry);
-		}
-	}
-	
-	public void clear() {
-		entry = "0";
-		secondEntry = "0";
-		op = Operation.NONE;
-		setText(entry);
-	}
-	
-	public void back() {
-		if (entry.length() == 1
-				|| (entry.charAt(0) == '-' && entry.length() == 2)) {
-			entry = "0";
-		} else {
-			entry = entry.substring(0, entry.length() - 1);
-		}
-		setText(entry);
-	}
-	
-	public void add() {
-		if (repeatOp != Operation.NONE) {
-			equals();
-		}
-		op = Operation.ADD;
-		repeatOp = Operation.ADD;
-		repeatEntry = entry;
-		prevIsNumber = false;
-	}
-	
-	public void equals() {
-		if (op == Operation.ADD) {
-			if (repeatOp == Operation.NONE || !prevIsNumber) {
-				setEntry(Double.valueOf(entry) + Double.valueOf(repeatEntry));
-			} else {
-				repeatEntry = secondEntry;
-				setEntry(Double.valueOf(entry) + Double.valueOf(secondEntry));
-			}
-		}
-		repeatOp = Operation.NONE;
-	}
-	
 	public void oneOver() {
-		if (secondEntry != "0") {
-			if (!secondEntry.equals("0")) {
-				double value = Double.valueOf(secondEntry);
-				value = 1 / value;
-				setSecondEntry(value);
+		if (secondEntry == "0") {
+			if (!entry.equals("0")) {
+				setEntry(1 / Double.valueOf(entry));
 			} else {
 				calcFrame.setText(DIV_ZERO);
 			}
 		} else {
-			if (!entry.equals("0")) {
-				double value = Double.valueOf(entry);
-				value = 1 / value;
-				setEntry(value);
+			if (!secondEntry.equals("0")) {
+				setEntry(1 / Double.valueOf(secondEntry));
 			} else {
 				calcFrame.setText(DIV_ZERO);
 			}
@@ -187,15 +204,7 @@ public class Calculator {
 	}
 	
 	public void squared() {
-		if (secondEntry != "0") {
-			double value = Double.valueOf(secondEntry);
-			value *= value;
-			if (value != 0) {
-				setSecondEntry(value);
-			} else {
-				calcFrame.setText(OVERFLOW);
-			}
-		} else {
+		if (secondEntry == "0") {
 			double value = Double.valueOf(entry);
 			value *= value;
 			if (value != 0) {
@@ -203,40 +212,33 @@ public class Calculator {
 			} else {
 				calcFrame.setText(OVERFLOW);
 			}
+		} else {
+			double value = Double.valueOf(secondEntry);
+			value *= value;
+			if (value != 0) {
+				setSecondEntry(value);
+			} else {
+				calcFrame.setText(OVERFLOW);
+			}
 		}
 	}
 	
 	public void sqrt() {
+		if (secondEntry == "0") {
+			setEntry(Math.sqrt(Double.valueOf(secondEntry)));
+		} else {
+			setSecondEntry(Math.sqrt(Double.valueOf(secondEntry)));
+		}
+	}
+
+	public void percent() {
 		if (secondEntry != "0") {
-			double value = Double.valueOf(secondEntry);
-			value = Math.sqrt(value);
-			setSecondEntry(value);
+			setSecondEntry(
+					Double.valueOf(entry) * Double.valueOf(secondEntry) / 100);
 		} else {
-			double value = Double.valueOf(entry);
-			value = Math.sqrt(value);
-			setEntry(value);
+			entry = "0";
 		}
-	}
-	
-	private void setEntry(double value) {
-		int intValue = (int) value;
-		if (intValue == value) {
-			entry = "" + intValue;
-		} else {
-			entry = "" + value;
-		}
-		setText(entry);
-		secondEntry = "0";
-	}
-	
-	private void setSecondEntry(double value) {
-		int intValue = (int) value;
-		if (intValue == value) {
-			secondEntry = "" + intValue;
-		} else {
-			secondEntry = "" + value;
-		}
-		setText(secondEntry);
+		
 	}
 	
 	public static void main(String[] args) {

@@ -168,6 +168,10 @@ public class CalcButton extends JButton implements ActionListener {
 			calc.squared();
 		} else if (text.equals("√x")) {
 			calc.sqrt();
+		} else if (text.equals("%")) {
+			calc.percent();
+		} else {
+			System.err.println("Error: Unhandled button");
 		}
 	}
 	 
