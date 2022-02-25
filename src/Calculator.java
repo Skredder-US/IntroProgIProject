@@ -1,3 +1,5 @@
+import javax.swing.SwingUtilities;
+
 public class Calculator {
 	
 	public static final String DIV_ZERO = "Cannot divide by zero";
@@ -7,20 +9,22 @@ public class Calculator {
 		ADD,
 		SUBTRACT,
 		MULTIPLY,
-		DIVIDE
+		DIVIDE,
+		NONE
 	}
-	
-	private String entry;
-	private String nextEntry;
-	private boolean isNextEntry;
-	private Operation op;
+
 	private CalcFrame calcFrame;
+	private String entry;
+	private String secondEntry;
+	private String repeatEntry;
+	private Operation op;
+	private boolean isRepeatOp;
+	private boolean prevIsNumber;
 	
 	public Calculator() {
 		entry = "0";
-		nextEntry = "0";
-		isNextEntry = false;
-		op = null;
+		secondEntry = "0";
+		op = Operation.NONE;
 		
 		calcFrame = new CalcFrame(this);
 		calcFrame.setText(entry);
@@ -58,13 +62,14 @@ public class Calculator {
 	} 
 
 	public void number(String n) {
-		if (isNextEntry) {
-			if (nextEntry.equals("0")) {
-				nextEntry = n;
+		prevIsNumber = true;
+		if (op != Operation.NONE) {
+			if (secondEntry.equals("0")) {
+				secondEntry = n;
 			} else {
-				nextEntry += n;
+				secondEntry += n;
 			}
-			setText(nextEntry);
+			setText(secondEntry);
 		} else if (entry.length() < 16) {
 			if (entry.equals("0")) {
 				entry = n;
@@ -76,14 +81,14 @@ public class Calculator {
 	}
 	
 	public void negate() {
-		if (isNextEntry) {
-			if (!nextEntry.equals("0")) {
-				if (nextEntry.charAt(0) == '-') {
-					nextEntry = nextEntry.substring(1, entry.length());
+		if (op != Operation.NONE) {
+			if (!secondEntry.equals("0")) {
+				if (secondEntry.charAt(0) == '-') {
+					secondEntry = secondEntry.substring(1, entry.length());
 				} else {
-					nextEntry = "-" + nextEntry;
+					secondEntry = "-" + secondEntry;
 				}
-				setText(nextEntry);
+				setText(secondEntry);
 			}
 		} else {
 			if (!entry.equals("0")) {
@@ -98,10 +103,10 @@ public class Calculator {
 	}
 	
 	public void decimal() {
-		if (isNextEntry) {
-			if (!nextEntry.contains(".")) {
-				nextEntry += ".";
-				setText(nextEntry);
+		if (op != Operation.NONE) {
+			if (!secondEntry.contains(".")) {
+				secondEntry += ".";
+				setText(secondEntry);
 			}
 		} else {
 			if (!entry.contains(".")) {
@@ -112,9 +117,9 @@ public class Calculator {
 	}
 	
 	public void clearEntry() {
-		if (isNextEntry) {
-			nextEntry = "0";
-			setText(nextEntry);
+		if (op != Operation.NONE) {
+			secondEntry = "0";
+			setText(secondEntry);
 		} else {
 			entry = "0";
 			setText(entry);
@@ -123,7 +128,8 @@ public class Calculator {
 	
 	public void clear() {
 		entry = "0";
-		nextEntry = "0";
+		secondEntry = "0";
+		op = Operation.NONE;
 		setText(entry);
 	}
 	
@@ -138,46 +144,75 @@ public class Calculator {
 	}
 	
 	public void add() {
-		isNextEntry = true;
 		op = Operation.ADD;
+		isRepeatOp = false;
+		prevIsNumber = false;
+		repeatEntry = entry;
 	}
 	
 	public void equals() {
-		isNextEntry = false;
 		if (op == Operation.ADD) {
-			double value = Double.valueOf(nextEntry) + Double.valueOf(entry);
-			setEntry(value);
-			setText(entry);
+			if (isRepeatOp || !prevIsNumber) {
+				setEntry(Double.valueOf(entry) + Double.valueOf(repeatEntry));
+			} else {
+				repeatEntry = secondEntry;
+				setEntry(Double.valueOf(entry) + Double.valueOf(secondEntry));
+				isRepeatOp = true;
+			}
 		}
 	}
 	
 	public void oneOver() {
-		if (!entry.equals("0")) {
-			double value = Double.valueOf(entry);
-			value = 1 / value;
-			setEntry(value);
-			setText(entry);
+		if (secondEntry != "0") {
+			if (!secondEntry.equals("0")) {
+				double value = Double.valueOf(secondEntry);
+				value = 1 / value;
+				setSecondEntry(value);
+			} else {
+				calcFrame.setText(DIV_ZERO);
+			}
 		} else {
-			calcFrame.setText(DIV_ZERO);
+			if (!entry.equals("0")) {
+				double value = Double.valueOf(entry);
+				value = 1 / value;
+				setEntry(value);
+			} else {
+				calcFrame.setText(DIV_ZERO);
+			}
 		}
+
 	}
 	
 	public void squared() {
-		double value = Double.valueOf(entry);
-		value *= value;
-		if (value != 0) {
-			setEntry(value);
-			setText(entry);
+		if (secondEntry != "0") {
+			double value = Double.valueOf(secondEntry);
+			value *= value;
+			if (value != 0) {
+				setSecondEntry(value);
+			} else {
+				calcFrame.setText(OVERFLOW);
+			}
 		} else {
-			calcFrame.setText(OVERFLOW);
+			double value = Double.valueOf(entry);
+			value *= value;
+			if (value != 0) {
+				setEntry(value);
+			} else {
+				calcFrame.setText(OVERFLOW);
+			}
 		}
 	}
 	
 	public void sqrt() {
-		double value = Double.valueOf(entry);
-		value = Math.sqrt(value);
-		setEntry(value);
-		setText(entry);
+		if (secondEntry != "0") {
+			double value = Double.valueOf(secondEntry);
+			value = Math.sqrt(value);
+			setSecondEntry(value);
+		} else {
+			double value = Double.valueOf(entry);
+			value = Math.sqrt(value);
+			setEntry(value);
+		}
 	}
 	
 	private void setEntry(double value) {
@@ -187,9 +222,26 @@ public class Calculator {
 		} else {
 			entry = "" + value;
 		}
+		setText(entry);
+		secondEntry = "0";
+	}
+	
+	private void setSecondEntry(double value) {
+		int intValue = (int) value;
+		if (intValue == value) {
+			secondEntry = "" + intValue;
+		} else {
+			secondEntry = "" + value;
+		}
+		setText(secondEntry);
 	}
 	
 	public static void main(String[] args) {
-		new Calculator();
-	}
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Calculator();
+            }
+        });
+    }
 }
