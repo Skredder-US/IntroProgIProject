@@ -164,6 +164,8 @@ public class CalcButton extends JButton implements ActionListener {
 			calc.subtract();
 		} else if (text.equals("×")) {
 			calc.multiply();
+		} else if (text.equals("÷")) {
+			calc.division();
 		} else if (text.equals("=")) {
 			calc.equals();
 		} else if (text.equals("1/x")) {

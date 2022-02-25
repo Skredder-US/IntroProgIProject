@@ -6,12 +6,21 @@ public class Calculator {
 	public static final String OVERFLOW = "Overflow";
 	
 	enum Operation {
-		ADD,
-		SUBTRACT,
-		MULTIPLY,
-		DIVIDE,
-		NONE
-	}
+		  ADD {
+			  public double apply(double a, double b) { return a + b; }
+		  }, 
+		  SUBTRACT {
+			  public double apply(double a, double b) { return a - b; }
+		  }, 
+		  MULTIPLY {
+			  public double apply(double a, double b) { return a * b; }
+		  }, 
+		  DIVIDE {
+			  public double apply(double a, double b) { return a / b; }
+		  };
+
+		  public abstract double apply(double a, double b);
+		}
 
 	private CalcFrame calcFrame;
 	private String entry;
@@ -24,7 +33,7 @@ public class Calculator {
 	public Calculator() {
 		entry = "0";
 		secondEntry = "0";
-		op = Operation.NONE;
+		op = null;
 		
 		calcFrame = new CalcFrame(this);
 		calcFrame.setText(entry);
@@ -84,7 +93,7 @@ public class Calculator {
 	
 	public void number(String n) {
 		prevIsNumber = true;
-		if (op != Operation.NONE) {
+		if (op != null) {
 			if (secondEntry.equals("0")) {
 				secondEntry = n;
 			} else {
@@ -102,75 +111,61 @@ public class Calculator {
 	}
 	
 	public void add() {
-		if (repeatOp == Operation.ADD) {
-			equals();
-		}
-		op = Operation.ADD;
-		repeatOp = Operation.ADD;
-		repeatEntry = entry;
-		prevIsNumber = false;
+		operation(Operation.ADD);
 	}
 	
 	public void subtract() {
-		if (repeatOp == Operation.SUBTRACT) {
-			equals();
-		}
-		op = Operation.SUBTRACT;
-		repeatOp = Operation.SUBTRACT;
-		repeatEntry = entry;
-		prevIsNumber = false;
+		operation(Operation.SUBTRACT);
 	}
 	
 	public void multiply() {
-		if (repeatOp == Operation.MULTIPLY) {
+		operation(Operation.MULTIPLY);
+	}
+	
+	public void division() {
+		operation(Operation.DIVIDE);
+	}
+	
+	private void operation(Operation op) {
+		if (repeatOp != null) {
 			equals();
 		}
-		op = Operation.MULTIPLY;
-		repeatOp = Operation.MULTIPLY;
+		this.op = op;
+		repeatOp = op;
 		repeatEntry = entry;
 		prevIsNumber = false;
 	}
 	
 	public void equals() {
-		if (op == Operation.ADD) {
-			if (repeatOp == Operation.NONE || !prevIsNumber) {
-				setEntry(Double.valueOf(entry) + Double.valueOf(repeatEntry));
-			} else {
-				repeatEntry = secondEntry;
-				setEntry(Double.valueOf(entry) + Double.valueOf(secondEntry));
-			}
-		} else if (op == Operation.SUBTRACT) {
-			if (repeatOp == Operation.NONE || !prevIsNumber) {
-				setEntry(Double.valueOf(entry) - Double.valueOf(repeatEntry));
-			} else {
-				repeatEntry = secondEntry;
-				setEntry(Double.valueOf(entry) - Double.valueOf(secondEntry));
-			}
-		} else if (op == Operation.MULTIPLY) {
-			if (repeatOp == Operation.NONE || !prevIsNumber) {
-				setEntry(Double.valueOf(entry) * Double.valueOf(repeatEntry));
-			} else {
-				repeatEntry = secondEntry;
-				setEntry(Double.valueOf(entry) * Double.valueOf(secondEntry));
-			}
+		eval(op);
+		repeatOp = null;
+	}
+	
+	private void eval(Operation op) {
+		if (repeatOp == null || !prevIsNumber) {
+			setEntry(op.apply(
+					Double.valueOf(entry), Double.valueOf(repeatEntry)));
+		} else {
+			repeatEntry = secondEntry;
+			setEntry(op.apply(
+					Double.valueOf(entry), Double.valueOf(secondEntry)));
 		}
-		repeatOp = Operation.NONE;
 	}
 	
 	public void clear() {
 		entry = "0";
 		secondEntry = "0";
-		op = Operation.NONE;
+		op = null;
 		setText(entry);
 	}
 	
 	public void clearEntry() {
-		if (op != Operation.NONE) {
-			secondEntry = "0";
-			setText(secondEntry);
-		} else {
+		if (op == null) {
 			entry = "0";
 			setText(entry);
+		} else {
+			secondEntry = "0";
+			setText(secondEntry);
 		}
 	}
 	
@@ -185,30 +180,21 @@ public class Calculator {
 	}
 	
 	public void decimal() {
-		if (op != Operation.NONE) {
-			if (!secondEntry.contains(".")) {
-				secondEntry += ".";
-				setText(secondEntry);
-			}
-		} else {
+		if (op == null) {
 			if (!entry.contains(".")) {
 				entry += ".";
 				setText(entry);
+			}
+		} else {
+			if (!secondEntry.contains(".")) {
+				secondEntry += ".";
+				setText(secondEntry);
 			}
 		}
 	}
 	
 	public void negate() {
-		if (op != Operation.NONE) {
-			if (!secondEntry.equals("0")) {
-				if (secondEntry.charAt(0) == '-') {
-					secondEntry = secondEntry.substring(1, entry.length());
-				} else {
-					secondEntry = "-" + secondEntry;
-				}
-				setText(secondEntry);
-			}
-		} else {
+		if (op == null) {
 			if (!entry.equals("0")) {
 				if (entry.charAt(0) == '-') {
 					entry = entry.substring(1, entry.length());
@@ -216,6 +202,15 @@ public class Calculator {
 					entry = "-" + entry;
 				}
 				setText(entry);
+			}
+		} else {
+			if (!secondEntry.equals("0")) {
+				if (secondEntry.charAt(0) == '-') {
+					secondEntry = secondEntry.substring(1, entry.length());
+				} else {
+					secondEntry = "-" + secondEntry;
+				}
+				setText(secondEntry);
 			}
 		}
 	}
@@ -259,7 +254,7 @@ public class Calculator {
 	
 	public void sqrt() {
 		if (secondEntry == "0") {
-			setEntry(Math.sqrt(Double.valueOf(secondEntry)));
+			setEntry(Math.sqrt(Double.valueOf(entry)));
 		} else {
 			setSecondEntry(Math.sqrt(Double.valueOf(secondEntry)));
 		}
