@@ -11,10 +11,10 @@ public class CalcLabel extends JLabel {
 		super("", SwingConstants.RIGHT);
 
 		setPreferredSize(new Dimension(450, 90));
-		setBackground(CalcPanel.GRAY_240);
+		setBackground(CalcPanel.BACKGROUND);
 		setOpaque(true); // necessary to set Color
 		setBorder(new EmptyBorder(0, 0, 0, 10));
-		setFont(new Font(CalcPanel.FONT_BOLD, Font.PLAIN, 40));
+		setFont(new Font(CalcPanel.FONTNAME_BOLD, Font.PLAIN, 40));
 	}
 	
 }

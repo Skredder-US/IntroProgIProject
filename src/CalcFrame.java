@@ -15,9 +15,9 @@ public class CalcFrame extends JFrame {
 		setSize(WIDTH, HEIGHT);
 		setResizable(false);
 		setLocationRelativeTo(null); // centers frame in screen
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setIconImage(
 				Toolkit.getDefaultToolkit().getImage("src/Calculator-Icon.png"));
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		calcPanel = new CalcPanel(calc);
 		add(calcPanel);

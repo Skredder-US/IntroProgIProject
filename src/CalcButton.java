@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,13 +12,15 @@ import javax.swing.KeyStroke;
 
 public class CalcButton extends JButton implements ActionListener {
 
-	private static final Color BLUE_PRESSED = new Color(0, 153, 188);
-	private static final Color BLUE_HOVER = new Color(75, 180, 205);
-	private static final Color BLUE = new Color(145, 205, 220);
-	private static final Color GRAY_PRESSED = new Color(203, 203, 203);
-	private static final Color GRAY_HOVER = new Color(224, 224, 224);
-	private static final Color GRAY_247 = new Color(247, 247, 247);
-	private static final Color GRAY_252 = new Color(252, 252, 252);
+	public static final String FONTNAME_PLAIN = "Segoe UI Light";
+	public static final Font LARGE = new Font(FONTNAME_PLAIN, Font.PLAIN, 30);
+	private static final Color DARKER_GRAY = new Color(240, 240, 240);
+	private static final Color LIGHTER_GRAY = new Color(250, 250, 250);
+	private static final Color GRAY_HOVER = new Color(215, 215, 215);
+	private static final Color GRAY_PRESSED = new Color(187, 187, 187);
+	private static final Color EQUALS = new Color(138, 199, 213);
+	private static final Color EQUALS_HOVER = new Color(69, 176, 200);
+	private static final Color EQUALS_PRESSED = new Color(0, 153, 188);
 	// *, +, @ are broke
 	// %, - are missing
 	// same outer indices as BUTTON_TEXT indices
@@ -54,9 +57,9 @@ public class CalcButton extends JButton implements ActionListener {
 			 "1", "2", "3", "+",
 			 "±", "0", ".", "="};
 	
-	
-	private int index; 
+
 	private Calculator calc;
+	private int index; 
 	
 	public CalcButton(Calculator calc, int index) {
 		super(BUTTON_TEXT[index]);
@@ -75,7 +78,7 @@ public class CalcButton extends JButton implements ActionListener {
 	private void setFont() {
 		if (index % 4 == 3) {
 			// Rightmost column
-			super.setFont(CalcPanel.LARGE);
+			super.setFont(LARGE);
 		} else if (index < 8) {
 			// top left 3x2 (WxH)
 			super.setFont(CalcPanel.PLAIN);
@@ -110,7 +113,7 @@ public class CalcButton extends JButton implements ActionListener {
 	            g.setColor(GRAY_PRESSED);
 			} else {
 				// bottom right
-	            g.setColor(BLUE_PRESSED);
+	            g.setColor(EQUALS_PRESSED);
 			}
         } else if (getModel().isRollover()) {
 			if (index < 23) {
@@ -118,18 +121,18 @@ public class CalcButton extends JButton implements ActionListener {
 	            g.setColor(GRAY_HOVER);
 			} else {
 				// bottom right
-	            g.setColor(BLUE_HOVER);
+	            g.setColor(EQUALS_HOVER);
 			}
         } else {
     		if (index == 23) {
         		// bottom left
-    			g.setColor(BLUE);
+    			g.setColor(EQUALS);
         	} else if (index < 8 || index % 4 == 3) {
         		// top 2 rows and rightmost column except the bottom one 
-        		g.setColor(GRAY_247);
+        		g.setColor(DARKER_GRAY);
      		} else { // index >= 8 && index % 4 != 3
      			// bottom left 3x4 (WxH) 
-     			g.setColor(GRAY_252);
+     			g.setColor(LIGHTER_GRAY);
      		}
         }
         
