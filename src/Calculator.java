@@ -43,37 +43,31 @@ public class Calculator {
 
 	private CalcFrame calcFrame;
 	private String entry;
-	private String secondEntry;
-	private String repeatEntry;
+	private String prevEntry;
 	private Operation op;
-	private Operation repeatOp;
-	private boolean prevIsNumber;
+	private boolean isNext;
+	private boolean isResult;
 	
 	public Calculator() {
-		calcFrame = new CalcFrame(this);
 		entry = "0";
-		secondEntry = "0";
-		repeatEntry = "0";
+		prevEntry = "0";
 		op = null;
-		repeatOp = null;
-		prevIsNumber = false;
+		isNext = false;
+		isResult = false;
 		
+		calcFrame = new CalcFrame(this);
 		calcFrame.setText(entry);
 	}
 	
 	private void setText(String text) {
-		if (!text.equals("Infinity")) {
-			int decimalIndex = text.indexOf(".");
-			if (decimalIndex == -1) {
-				// no decimal
-				calcFrame.setText(addComma(text));
-			} else {
-				// decimal
-				calcFrame.setText(addComma(text.substring(0, decimalIndex))
-						+ text.substring(decimalIndex, text.length()));
-			}
+		int decimalIndex = text.indexOf(".");
+		if (decimalIndex == -1) {
+			// no decimal
+			calcFrame.setText(addComma(text));
 		} else {
-			calcFrame.setText(OVERFLOW);
+			// decimal
+			calcFrame.setText(addComma(text.substring(0, decimalIndex))
+					+ text.substring(decimalIndex, text.length()));
 		}
 	}
 	
@@ -92,26 +86,21 @@ public class Calculator {
 		return withComma;
 	} 
 	
-	public void number(String n) {
-		prevIsNumber = true;
-		
-		if (op == null) {
-			if (entry.length() < 16) {
-				if (entry.equals("0")) {
-					entry = n;
-				} else {
-					entry += n;
-				}
-				setText(entry);
-			}
-		} else  {
-			if (secondEntry.length() < 16) {
-				if (secondEntry.equals("0")) {
-					secondEntry = n;
-				} else {
-					secondEntry += n;
-				}
-				setText(secondEntry);
+	public void number(String num) {
+		if (isNext) {
+			prevEntry = entry;
+			setEntry(num);
+			isNext = false;
+		} else if (isResult) {
+			prevEntry = "0";
+			op = null;
+			setEntry(num);
+			isResult = false;
+		} else if (entry.length() < 16) {
+			if (entry.equals("0")) {
+				setEntry(num);
+			} else {
+				setEntry(entry + num);
 			}
 		}
 	}
@@ -133,171 +122,95 @@ public class Calculator {
 	}
 	
 	private void operation(Operation op) {
-		if (repeatOp != null) {
+		if (this.op == op) {
 			equals();
+			isResult = false;
 		}
 		this.op = op;
-		repeatOp = op;
-		repeatEntry = entry;
-		prevIsNumber = false;
+		isNext = true;
 	}
 	
 	public void equals() {
-		if (repeatOp == null || !prevIsNumber) {
-			setEntry(op.apply(
-					new BigDecimal(entry), new BigDecimal(repeatEntry)));
-		} else {
-			repeatEntry = secondEntry;
-			setEntry(op.apply(
-					new BigDecimal(entry), new BigDecimal(secondEntry)));
-		}
-		repeatOp = null;
+		setEntry(op.apply(new BigDecimal(entry), new BigDecimal(prevEntry)));
+		isResult = true;
 	}
 	
-	private void setEntry(BigDecimal num) {
-		entry = "" + num;
+	private void setEntry(String newEntry) {
+		entry = newEntry;
 		setText(entry);
-		secondEntry = "0";
 	}
 	
-	private void setSecondEntry(BigDecimal num) {
-		secondEntry = "" + num;
-		setText(secondEntry);
+	private void setEntry(BigDecimal bd) {
+		setEntry("" + bd);
 	}
 	
 	public void clear() {
 		entry = "0";
-		secondEntry = "0";
-		repeatEntry = "0";
 		op = null;
-		repeatOp = null;
-		prevIsNumber = false;
 		
 		setText(entry);
 	}
 	
 	public void clearEntry() {
-		if (op == null) {
-			entry = "0";
-			setText(entry);
-		} else {
-			secondEntry = "0";
-			setText(secondEntry);
-		}
+		entry = "0";
+		setText(entry);
 	}
 	
 	public void back() {
-		if (op == null) {
-			if (entry.length() == 1
-					|| (entry.charAt(0) == '-' && entry.length() == 2)) {
-				entry = "0";
-			} else {
-				entry = entry.substring(0, entry.length() - 1);
-			}
-			setText(entry);
+		if (entry.length() == 1
+				|| (entry.charAt(0) == '-' && entry.length() == 2)) {
+			entry = "0";
 		} else {
-			if (secondEntry.length() == 1 
-					|| (secondEntry.charAt(0) == '-'
-					&& secondEntry.length() == 2)) {
-				secondEntry = "0";
-			} else {
-				secondEntry = 
-						secondEntry.substring(0, secondEntry.length() - 1);
-			}
-			setText(secondEntry);
-			
+			entry = entry.substring(0, entry.length() - 1);
 		}
+		setText(entry);
 	}
 	
 	public void decimal() {
-		if (op == null) {
-			if (!entry.contains(".")) {
-				entry += ".";
-				setText(entry);
-			}
-		} else {
-			if (!secondEntry.contains(".")) {
-				secondEntry += ".";
-				setText(secondEntry);
-			}
+		if (!entry.contains(".")) {
+			entry += ".";
+			setText(entry);
 		}
 	}
 	
 	public void negate() {
-		if (op == null) {
-			if (!entry.equals("0")) {
-				if (entry.charAt(0) == '-') {
-					entry = entry.substring(1, entry.length());
-				} else {
-					entry = "-" + entry;
-				}
-				setText(entry);
+		if (!entry.equals("0")) {
+			if (entry.charAt(0) == '-') {
+				entry = entry.substring(1, entry.length());
+			} else {
+				entry = "-" + entry;
 			}
-		} else {
-			if (!secondEntry.equals("0")) {
-				if (secondEntry.charAt(0) == '-') {
-					secondEntry = secondEntry.substring(1, entry.length());
-				} else {
-					secondEntry = "-" + secondEntry;
-				}
-				setText(secondEntry);
-			}
+			setText(entry);
 		}
 	}
 	
 	public void oneOver() {
-		if (secondEntry == "0") {
-			if (!entry.equals("0")) {
-				setEntry(ONE.divide(new BigDecimal(entry), PRECISION));
-			} else {
-				calcFrame.setText(DIV_ZERO);
-			}
+		if (!entry.equals("0")) {
+			setEntry("" + ONE.divide(new BigDecimal(entry), PRECISION));
 		} else {
-			if (!secondEntry.equals("0")) {
-				setEntry(ONE.divide(new BigDecimal(secondEntry), PRECISION));
-			} else {
-				calcFrame.setText(DIV_ZERO);
-			}
+			calcFrame.setText(DIV_ZERO);
 		}
 
 	}
 	
 	public void squared() {
-		if (secondEntry == "0") {
-			BigDecimal value = new BigDecimal(entry);
-			value = value.multiply(value, PRECISION);
-			if (!value.equals(ZERO)) {
-				setEntry(value);
-			} else {
-				calcFrame.setText(OVERFLOW);
-			}
+		BigDecimal value = new BigDecimal(entry);
+		value = value.multiply(value, PRECISION);
+		if (!value.equals(ZERO)) {
+			setEntry("" + value);
 		} else {
-			BigDecimal value = new BigDecimal(secondEntry);
-			value = value.multiply(value, PRECISION);
-			if (!value.equals(ZERO)) {
-				setSecondEntry(value);
-			} else {
-				calcFrame.setText(OVERFLOW);
-			}
+			calcFrame.setText(OVERFLOW);
 		}
 	}
 	
 	public void sqrt() {
-		if (secondEntry == "0") {
-			setEntry((new BigDecimal(entry)).sqrt(PRECISION));
-		} else {
-			setSecondEntry( 
-					(new BigDecimal(secondEntry)).sqrt(PRECISION));
-		}
+			setEntry("" + (new BigDecimal(entry)).sqrt(PRECISION));
 	}
 
 	public void percent() {
-		if (secondEntry != "0") {
-			setSecondEntry((new BigDecimal(entry).multiply(
-					new BigDecimal(secondEntry))).divide(new BigDecimal(100)));
-		} else {
-			entry = "0";
-		}
+		setEntry("" + (new BigDecimal(entry)
+				.multiply(new BigDecimal(prevEntry)))
+				.divide(new BigDecimal(100)));
 		
 	}
 	
