@@ -44,19 +44,14 @@ public class Calculator {
 	private CalcFrame calcFrame;
 	private String entry;
 	private String prevEntry;
+	private String repeatEntry;
 	private Operation op;
 	private boolean isNext;
 	private boolean isResult;
 	
 	public Calculator() {
-		entry = "0";
-		prevEntry = "0";
-		op = null;
-		isNext = false;
-		isResult = false;
-		
 		calcFrame = new CalcFrame(this);
-		calcFrame.setText(entry);
+		clear();
 	}
 	
 	private void setText(String text) {
@@ -87,6 +82,7 @@ public class Calculator {
 	} 
 	
 	public void number(String num) {
+		repeatEntry = "0";
 		if (isNext) {
 			prevEntry = entry;
 			setEntry(num);
@@ -95,7 +91,6 @@ public class Calculator {
 			prevEntry = "0";
 			op = null;
 			setEntry(num);
-			isResult = false;
 		} else if (entry.length() < 16) {
 			if (entry.equals("0")) {
 				setEntry(num);
@@ -103,6 +98,7 @@ public class Calculator {
 				setEntry(entry + num);
 			}
 		}
+		isResult = false;
 	}
 	
 	public void add() {
@@ -122,20 +118,29 @@ public class Calculator {
 	}
 	
 	private void operation(Operation op) {
-		if (this.op == op) {
+		if (isResult) {
+			repeatEntry = entry;
+		}
+		
+		if (this.op == op && !isResult) {
 			equals();
 			isResult = false;
 		}
+		
 		this.op = op;
 		isNext = true;
 	}
 	
 	public void equals() {
-		if (isResult) {
-			setEntry(op.apply(new BigDecimal(entry), new BigDecimal(entry)));
-		} else {
-			setEntry(
-					op.apply(new BigDecimal(prevEntry), new BigDecimal(entry)));
+		if (op != null) {
+			if (isResult) {
+				setEntry(op.apply(
+						new BigDecimal(entry), new BigDecimal(repeatEntry)));
+			} else {
+				repeatEntry = entry;
+				setEntry(op.apply(
+						new BigDecimal(prevEntry), new BigDecimal(entry)));
+			}
 			isResult = true;
 		}
 	}
@@ -151,7 +156,11 @@ public class Calculator {
 	
 	public void clear() {
 		entry = "0";
+		prevEntry = "0";
+		repeatEntry = "0";
 		op = null;
+		isNext = false;
+		isResult = false;
 		
 		setText(entry);
 	}
