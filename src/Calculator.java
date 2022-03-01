@@ -131,8 +131,13 @@ public class Calculator {
 	}
 	
 	public void equals() {
-		setEntry(op.apply(new BigDecimal(entry), new BigDecimal(prevEntry)));
-		isResult = true;
+		if (isResult) {
+			setEntry(op.apply(new BigDecimal(entry), new BigDecimal(entry)));
+		} else {
+			setEntry(
+					op.apply(new BigDecimal(prevEntry), new BigDecimal(entry)));
+			isResult = true;
+		}
 	}
 	
 	private void setEntry(String newEntry) {
