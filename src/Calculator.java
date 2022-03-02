@@ -155,7 +155,11 @@ public class Calculator {
 	}
 	
 	private void setEntry(BigDecimal bd) {
-		setEntry("" + bd);
+		String newEntry = bd.toPlainString();
+		if (newEntry.length() > 16) {
+			newEntry = bd.toString();
+		}
+		setEntry(newEntry);
 	}
 	
 	public void clear() {
