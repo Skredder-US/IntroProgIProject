@@ -3,30 +3,27 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 
 public class CalcFrame extends JFrame {
-	public static final int HEIGHT = 509;
-	public static final int WIDTH  = 516;
-	public static final String TITLE = "Calculator";
 	
 	private CalcPanel calcPanel;
 	
 	public CalcFrame(Calculator calc) {
-		super(TITLE);
+		super("Calculator");
 
-		setSize(WIDTH, HEIGHT);
+		setSize(518, 510);
 		setResizable(false);
-		setLocationRelativeTo(null); // centers frame in screen
 		setIconImage(
 				Toolkit.getDefaultToolkit().getImage("src/Calculator-Icon.png"));
+		setLocationRelativeTo(null); // centers frame in screen
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		calcPanel = new CalcPanel(calc);
-		add(calcPanel);
 		
+		add(calcPanel);
 		setVisible(true);
 	}
 	
-	public void setText(String entry) {
-		calcPanel.setText(entry);
+	public void setText(String text) {
+		calcPanel.setText(text);
 	}
 	
 }

@@ -12,8 +12,7 @@ import javax.swing.KeyStroke;
 
 public class CalcButton extends JButton implements ActionListener {
 
-	public static final String FONTNAME_PLAIN = "Segoe UI Light";
-	public static final Font LARGE = new Font(FONTNAME_PLAIN, Font.PLAIN, 30);
+	public static final Font LARGE = new Font("Segoe UI Light", Font.PLAIN, 30);
 	private static final Color DARKER_GRAY = new Color(240, 240, 240);
 	private static final Color LIGHTER_GRAY = new Color(250, 250, 250);
 	private static final Color GRAY_HOVER = new Color(215, 215, 215);
@@ -21,6 +20,13 @@ public class CalcButton extends JButton implements ActionListener {
 	private static final Color EQUALS = new Color(138, 199, 213);
 	private static final Color EQUALS_HOVER = new Color(69, 176, 200);
 	private static final Color EQUALS_PRESSED = new Color(0, 153, 188);
+	private static final String[] BUTTON_TEXT = 
+		{"%", "CE", "C", "◄",
+		 "1/x", "x²", "√x", "÷",
+		 "7", "8", "9", "×",
+		 "4", "5", "6", "-",
+		 "1", "2", "3", "+",
+		 "±", "0", ".", "="};
 	// *, +, @ are broke
 	// %, - are missing
 	// same outer indices as BUTTON_TEXT indices
@@ -49,14 +55,6 @@ public class CalcButton extends JButton implements ActionListener {
 			 {KeyEvent.VK_F9}, {KeyEvent.VK_0, KeyEvent.VK_NUMPAD0},
 			 		{KeyEvent.VK_PERIOD , KeyEvent.VK_DECIMAL},
 			 		{KeyEvent.VK_ENTER, KeyEvent.VK_EQUALS}};
-	private static final String[] BUTTON_TEXT = 
-			{"%", "CE", "C", "◄",
-			 "1/x", "x²", "√x", "÷",
-			 "7", "8", "9", "×",
-			 "4", "5", "6", "-",
-			 "1", "2", "3", "+",
-			 "±", "0", ".", "="};
-	
 
 	private Calculator calc;
 	private int index; 
@@ -93,12 +91,12 @@ public class CalcButton extends JButton implements ActionListener {
 			getInputMap(WHEN_IN_FOCUSED_WINDOW).put(
 					KeyStroke.getKeyStroke(hotkey, 0), "doClick");
 		}
-		// TODO Needs a new AbstractAction for each hotkey (like this)?
+		
 		getActionMap().put("doClick", new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			  doClick();
+				doClick();
 			}
 			
 		});
@@ -125,7 +123,7 @@ public class CalcButton extends JButton implements ActionListener {
 			}
         } else {
     		if (index == 23) {
-        		// bottom left
+        		// bottom right
     			g.setColor(EQUALS);
         	} else if (index < 8 || index % 4 == 3) {
         		// top 2 rows and rightmost column except the bottom one 

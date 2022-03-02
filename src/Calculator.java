@@ -4,37 +4,36 @@ import java.math.MathContext;
 import javax.swing.SwingUtilities;
 
 public class Calculator {
-	
-	public static final String DIV_ZERO = "Cannot divide by zero";
-	public static final String OVERFLOW = "Overflow";
-	
 	private static final MathContext PRECISION = new MathContext(16);
-	private static final BigDecimal ONE = new BigDecimal(1);
-	private static final BigDecimal ZERO = new BigDecimal(0);
+	private static final BigDecimal ONE_HUNDRED
+			= new BigDecimal(100, PRECISION);
 	
 	enum Operation {
 		ADD {
 			@Override
-			public BigDecimal apply(BigDecimal a, BigDecimal b) {
-				return a.add(b, PRECISION);
+			public BigDecimal apply(BigDecimal addend, BigDecimal augend) {
+				return addend.add(augend, PRECISION).stripTrailingZeros();
 			}
 		}, 
 		SUBTRACT {
 			@Override
-			public BigDecimal apply(BigDecimal a, BigDecimal b) {
-				return a.subtract(b, PRECISION);
+			public BigDecimal apply(BigDecimal minuend, BigDecimal subtrahend) {
+				return minuend.subtract(subtrahend, PRECISION)
+						.stripTrailingZeros();
 			}
 		}, 
 		MULTIPLY {
 			@Override
-			public BigDecimal apply(BigDecimal a, BigDecimal b) {
-				return a.multiply(b, PRECISION);
+			public BigDecimal apply(
+					BigDecimal multiplier, BigDecimal multiplicand) {
+				return multiplier.multiply(multiplicand, PRECISION)
+						.stripTrailingZeros();
 			}
 		}, 
 		DIVIDE {
 			@Override
-			public BigDecimal apply(BigDecimal a, BigDecimal b) {
-				return a.divide(b, PRECISION);
+			public BigDecimal apply(BigDecimal dividend, BigDecimal divisor) {
+				return dividend.divide(divisor, PRECISION).stripTrailingZeros();
 			}
 		};
 
@@ -68,17 +67,17 @@ public class Calculator {
 	
 	private static String addComma(String n) {
 		int digitCount = 0;
-		String withComma = "";
+		String withCommas = "";
 		for (int i = n.length() - 1; i >= 0; i--) {
 			digitCount++;
 			if (n.charAt(i) != '-' && (digitCount == 4
 					|| (digitCount > 4 && digitCount % 3 == 1))) {
-				withComma = n.charAt(i) + "," + withComma;
+				withCommas = n.charAt(i) + "," + withCommas;
 			} else {
-				withComma = n.charAt(i) + withComma;
+				withCommas = n.charAt(i) + withCommas;
 			}
 		}
-		return withComma;
+		return withCommas;
 	} 
 	
 	public void number(String num) {
@@ -132,17 +131,22 @@ public class Calculator {
 	}
 	
 	public void equals() {
-		if (op != null) {
-			if (isResult) {
-				setEntry(op.apply(
-						new BigDecimal(entry), new BigDecimal(repeatEntry)));
-			} else {
-				repeatEntry = entry;
-				setEntry(op.apply(
-						new BigDecimal(prevEntry), new BigDecimal(entry)));
+		try {
+			if (op != null) {
+				if (isResult) {
+					setEntry(op.apply(new BigDecimal(entry, PRECISION),
+							new BigDecimal(repeatEntry, PRECISION)));
+				} else {
+					repeatEntry = entry;
+					setEntry(op.apply(new BigDecimal(prevEntry, PRECISION),
+							new BigDecimal(entry, PRECISION)));
+				}
+				isResult = true;
 			}
-			isResult = true;
+		} catch (ArithmeticException ae) {
+			calcFrame.setText(ae.getMessage());
 		}
+		
 	}
 	
 	private void setEntry(String newEntry) {
@@ -199,41 +203,52 @@ public class Calculator {
 	}
 	
 	public void oneOver() {
-		if (!entry.equals("0")) {
-			setEntry("" + ONE.divide(new BigDecimal(entry), PRECISION));
-		} else {
-			calcFrame.setText(DIV_ZERO);
+		try {
+			setEntry(BigDecimal.ONE.divide(
+					new BigDecimal(entry, PRECISION), PRECISION)
+					.stripTrailingZeros());
+		} catch (ArithmeticException ae) {
+			calcFrame.setText(ae.getMessage());
 		}
-
 	}
 	
 	public void squared() {
-		BigDecimal value = new BigDecimal(entry);
-		value = value.multiply(value, PRECISION);
-		if (!value.equals(ZERO)) {
-			setEntry("" + value);
-		} else {
-			calcFrame.setText(OVERFLOW);
+		BigDecimal value = new BigDecimal(entry, PRECISION);
+		try {
+			value = value.multiply(value, PRECISION).stripTrailingZeros();
+			setEntry(value);
+		} catch (ArithmeticException ae) {
+			calcFrame.setText(ae.getMessage());
 		}
 	}
 	
 	public void sqrt() {
-			setEntry("" + (new BigDecimal(entry)).sqrt(PRECISION));
+		try {
+			setEntry((new BigDecimal(entry, PRECISION)).sqrt(PRECISION)
+					.stripTrailingZeros());
+		} catch (ArithmeticException ae) {
+			calcFrame.setText(ae.getMessage());
+		}
 	}
 
 	public void percent() {
-		setEntry("" + (new BigDecimal(entry)
-				.multiply(new BigDecimal(prevEntry)))
-				.divide(new BigDecimal(100)));
-		
+		try {
+			setEntry((new BigDecimal(entry, PRECISION)
+					.multiply(new BigDecimal(prevEntry, PRECISION)))
+					.divide(ONE_HUNDRED).stripTrailingZeros());
+		} catch (ArithmeticException ae) {
+			calcFrame.setText(ae.getMessage());
+		}
 	}
 	
 	public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
+        	
             @Override
             public void run() {
                 new Calculator();
             }
+            
         });
     }
 	
