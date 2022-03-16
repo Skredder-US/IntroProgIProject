@@ -189,6 +189,10 @@ public class Calculator {
 	}
 	
 	public void decimal() {
+		if (isNext) {
+			number("0");
+		}
+		
 		if (!entry.contains(".")) {
 			entry += ".";
 			setText(entry);
